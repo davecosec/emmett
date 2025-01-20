@@ -37,7 +37,7 @@ void describe('appendEvent', () => {
   let db: SQLiteConnection;
 
   before(async () => {
-    db = sqliteConnection().location(':memory:');
+    db = sqliteConnection({ location: ':memory:' });
     await createEventStoreSchema(db);
   });
 

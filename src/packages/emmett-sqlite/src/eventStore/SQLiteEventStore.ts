@@ -69,7 +69,9 @@ export const getSQLiteEventStore = (
     db = options.connection;
   }
   if (options?.databaseLocation && !options?.connection) {
-    db = sqliteConnection().location(options.databaseLocation);
+    db = sqliteConnection({
+      location: options.databaseLocation,
+    });
   }
 
   if (options) {

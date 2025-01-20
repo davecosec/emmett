@@ -3,9 +3,6 @@ import sqlite3 from 'sqlite3';
 export type Parameters = object | string | bigint | number | boolean | null;
 
 export type SQLiteConnection = {
-  location: (
-    path: AbsolutePath | RelativePath | ':memory:',
-  ) => SQLiteConnection;
   close: () => void;
   command: (sql: string, values?: Parameters[]) => Promise<void>;
   query: <T>(sql: string, values?: Parameters[]) => Promise<T[]>;
@@ -27,27 +24,30 @@ export const isSQLiteError = (error: unknown): error is SQLiteError => {
 export type AbsolutePath = `/${string}`;
 export type RelativePath = `${'.' | '..'}/${string}`;
 
-export const sqliteConnection = (conn?: sqlite3.Database): SQLiteConnection => {
+type SQLiteConnectionOptions =
+  | {
+      conn: sqlite3.Database;
+      location?: never;
+    }
+  | {
+      conn?: never;
+      location: AbsolutePath | RelativePath | ':memory:';
+    };
+export const sqliteConnection = (
+  options: SQLiteConnectionOptions,
+): SQLiteConnection => {
   let db: sqlite3.Database;
-  let connectionCreated = false;
 
-  if (conn != null) {
-    db = conn;
-    connectionCreated = true;
+  if (options.conn != null) {
+    db = options.conn;
+  } else {
+    if (typeof options.location !== 'string') {
+      throw new Error('Path for sqlite database must be given');
+    }
+    db = new sqlite3.Database(options.location);
   }
 
   return {
-    location(path): SQLiteConnection {
-      if (connectionCreated) throw new Error('Connection already created');
-
-      if (typeof path !== 'string') {
-        throw new Error('Path for sqlite database must be given');
-      }
-      db = new sqlite3.Database(path);
-      connectionCreated = true;
-
-      return this;
-    },
     close: (): void => db.close(),
     command: (sql: string, params?: Parameters[]) =>
       new Promise((resolve, reject) => {

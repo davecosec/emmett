@@ -21,7 +21,7 @@ void describe('EventStoreDBEventStore', () => {
   let db: SQLiteConnection;
 
   beforeEach(() => {
-    db = sqliteConnection().location(':memory:');
+    db = sqliteConnection({ location: ':memory:' });
   });
 
   afterEach(() => {
