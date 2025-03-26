@@ -174,8 +174,6 @@ const rowExistsWithValues = async <T>({
     [id],
   );
 
-  console.log('res', res);
-  console.log('data', data);
   assertDeepEqual(data, res);
 
   return true;

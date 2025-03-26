@@ -74,7 +74,6 @@ export const SQLiteProjectionSpec = {
                 ...givenEvents,
                 ...Array.from({ length: numberOfTimes }).flatMap(() => events),
               ]) {
-                console.log('----------------', event.type);
                 const metadata: SQLiteReadEventMetadata = {
                   globalPosition: ++globalPosition,
                   streamPosition: globalPosition,
